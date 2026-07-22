@@ -7,5 +7,17 @@ export default defineConfig({
   server: {
     port: 3000,
     host: true
+  },
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-charts': ['chart.js', 'react-chartjs-2'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-react': ['react', 'react-dom']
+        }
+      }
+    }
   }
 })

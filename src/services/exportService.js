@@ -1,6 +1,4 @@
-// BarberQ Pro - Data Export Engine (PDF, Excel, CSV)
-import { jsPDF } from 'jspdf';
-import * as XLSX from 'xlsx';
+// BarberQ Pro - Data Export Engine (PDF, Excel, CSV) - Optimized with Dynamic Imports
 
 /**
  * Export array of records to CSV format
@@ -32,9 +30,13 @@ export const exportToCSV = (filename, rows) => {
 
 /**
  * Export records to Excel file using SheetJS (xlsx)
+ * Optimized: xlsx is loaded only when this function is called.
  */
-export const exportToExcel = (filename, data, sheetName = 'Reports') => {
+export const exportToExcel = async (filename, data, sheetName = 'Reports') => {
   try {
+    // Dynamically import xlsx
+    const XLSX = await import('xlsx');
+
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
@@ -46,9 +48,12 @@ export const exportToExcel = (filename, data, sheetName = 'Reports') => {
 
 /**
  * Generate PDF Report using jsPDF
+ * Optimized: jspdf is loaded only when this function is called.
  */
-export const exportToPDF = (title, headers, data, filename = 'BarberQ_Report') => {
+export const exportToPDF = async (title, headers, data, filename = 'BarberQ_Report') => {
   try {
+    // Dynamically import jsPDF
+    const { jsPDF } = await import('jspdf');
     const doc = new jsPDF();
 
     // Title & Header styling

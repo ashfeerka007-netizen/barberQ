@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import confetti from 'canvas-confetti';
 import HeaderBar from './components/HeaderBar';
 import BottomNav from './components/BottomNav';
 import AddCustomerModal from './components/AddCustomerModal';
 import Toast from './components/Toast';
 
-import DashboardView from './views/DashboardView';
-import QueueView from './views/QueueView';
-import ServicesView from './views/ServicesView';
-import HistoryView from './views/HistoryView';
-import SettingsView from './views/SettingsView';
+const DashboardView = lazy(() => import('./views/DashboardView'));
+const QueueView = lazy(() => import('./views/QueueView'));
+const ServicesView = lazy(() => import('./views/ServicesView'));
+const HistoryView = lazy(() => import('./views/HistoryView'));
+const SettingsView = lazy(() => import('./views/SettingsView'));
 
 import { storageService } from './services/storage';
 import { calculateQueueTimings } from './services/queueEngine';
@@ -295,67 +295,69 @@ export default function App() {
 
       {/* Main Tab Content */}
       <main className="app-content">
-        {activeTab === 'dashboard' && (
-          <DashboardView
-            queue={queue}
-            history={history}
-            services={services}
-            onCompleteService={handleCompleteService}
-            onSkipCustomer={handleSkipCustomer}
-            onOpenAddCustomer={() => setIsAddModalOpen(true)}
-            currency={settings.currency}
-          />
-        )}
+        <Suspense fallback={<div className="loading-container">Loading...</div>}>
+          {activeTab === 'dashboard' && (
+            <DashboardView
+              queue={queue}
+              history={history}
+              services={services}
+              onCompleteService={handleCompleteService}
+              onSkipCustomer={handleSkipCustomer}
+              onOpenAddCustomer={() => setIsAddModalOpen(true)}
+              currency={settings.currency}
+            />
+          )}
 
-        {activeTab === 'queue' && (
-          <QueueView
-            queue={queue}
-            onUpdateQueue={updateQueueState}
-            onStartService={handleStartService}
-            onCompleteService={handleCompleteService}
-            onSkipCustomer={handleSkipCustomer}
-            onDeleteCustomer={handleDeleteCustomerFromQueue}
-            onClearQueue={handleClearQueue}
-            onClearCompletedQueue={handleClearCompletedQueueEntries}
-            onResetTokenCounter={handleResetTokenCounter}
-            onCallNext={handleCallNext}
-            onOpenAddCustomer={() => setIsAddModalOpen(true)}
-            settings={settings}
-            currency={settings.currency}
-          />
-        )}
+          {activeTab === 'queue' && (
+            <QueueView
+              queue={queue}
+              onUpdateQueue={updateQueueState}
+              onStartService={handleStartService}
+              onCompleteService={handleCompleteService}
+              onSkipCustomer={handleSkipCustomer}
+              onDeleteCustomer={handleDeleteCustomerFromQueue}
+              onClearQueue={handleClearQueue}
+              onClearCompletedQueue={handleClearCompletedQueueEntries}
+              onResetTokenCounter={handleResetTokenCounter}
+              onCallNext={handleCallNext}
+              onOpenAddCustomer={() => setIsAddModalOpen(true)}
+              settings={settings}
+              currency={settings.currency}
+            />
+          )}
 
-        {activeTab === 'services' && (
-          <ServicesView
-            services={services}
-            onSaveService={handleSaveService}
-            onDeleteService={handleDeleteService}
-            currency={settings.currency}
-          />
-        )}
+          {activeTab === 'services' && (
+            <ServicesView
+              services={services}
+              onSaveService={handleSaveService}
+              onDeleteService={handleDeleteService}
+              currency={settings.currency}
+            />
+          )}
 
-        {activeTab === 'history' && (
-          <HistoryView
-            history={history}
-            onReQueueCustomer={handleReQueueCustomer}
-            onDeleteHistoryItem={handleDeleteHistoryItem}
-            onClearHistory={handleClearHistory}
-            settings={settings}
-            currency={settings.currency}
-          />
-        )}
+          {activeTab === 'history' && (
+            <HistoryView
+              history={history}
+              onReQueueCustomer={handleReQueueCustomer}
+              onDeleteHistoryItem={handleDeleteHistoryItem}
+              onClearHistory={handleClearHistory}
+              settings={settings}
+              currency={settings.currency}
+            />
+          )}
 
-        {activeTab === 'settings' && (
-          <SettingsView
-            settings={settings}
-            onSaveSettings={handleSaveSettings}
-            onResetData={handleResetData}
-            onClearQueue={handleClearQueue}
-            onClearHistory={handleClearHistory}
-            onResetTokenCounter={handleResetTokenCounter}
-            showToast={showToast}
-          />
-        )}
+          {activeTab === 'settings' && (
+            <SettingsView
+              settings={settings}
+              onSaveSettings={handleSaveSettings}
+              onResetData={handleResetData}
+              onClearQueue={handleClearQueue}
+              onClearHistory={handleClearHistory}
+              onResetTokenCounter={handleResetTokenCounter}
+              showToast={showToast}
+            />
+          )}
+        </Suspense>
       </main>
 
       {/* Bottom Navigation */}
